@@ -28,6 +28,7 @@ def train(Net:nn.Module, optfunc:Optimizer, lossfunc:nn.Module, epochs, modelnam
     kt = utils.KeepTrack(path=cfg.paths['model'])
     traindata, valdata = dst.createdl()
     for epoch in range(epochs):
+        torch.cuda.empty_cache()
         trainloss = engine.train_setp(net=Net, data=traindata, opt=optfunc, criterion=lossfunc)
         valloss = engine.val_setp(net=Net, data=valdata, opt=optfunc, criterion=lossfunc)
         fname = f'{modelname}_{epoch}.pt'
