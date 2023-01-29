@@ -46,12 +46,13 @@ def train(Net:nn.Module, optfunc:Optimizer, lossfunc:nn.Module, epochs, modelnam
 def main():
     
     model = m.VideoPrint(inch=1, depth=20)
+    model.to(dev)
     optimizer = optim.Adam(params=model.parameters(), lr=3e-4)
     crt = utils.OneClassLoss(batch_size=100, group_size=2, reg=0.1)
 
     if args.train:
         train(Net=model, optfunc=optimizer, lossfunc=crt, epochs=args.epochs, modelname=args.modelname)
-        
+
     if args.test:
         tst.result()
     
