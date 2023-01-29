@@ -9,7 +9,7 @@ import conf as cfg
 
 class VideoPrint(nn.Module):
 
-    def __init__(self, inch=1, depth: int=20) -> None:
+    def __init__(self, inch=3, depth: int=20) -> None:
         super().__init__()
         self.depth = depth
         self.inch = inch
