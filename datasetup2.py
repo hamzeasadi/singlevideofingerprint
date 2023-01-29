@@ -99,8 +99,8 @@ class NoisPrintData(Dataset):
        
 
 def createdl():
-    traindataset = NoisPrintData(datapath=cfg.paths['train'], batch_size=50)
-    valdataset = NoisPrintData(datapath=cfg.paths['val'], batch_size=50)
+    traindataset = NoisPrintData(datapath=cfg.paths['train'], batch_size=64)
+    valdataset = NoisPrintData(datapath=cfg.paths['val'], batch_size=64)
     return DataLoader(traindataset, batch_size=1), DataLoader(valdataset, batch_size=1)
 
         
