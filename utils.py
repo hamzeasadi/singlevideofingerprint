@@ -79,7 +79,7 @@ class OneClassLoss(nn.Module):
 
         row = x[self.temp['s10'][0]]
         rem = x[self.temp['s10'][-1]]
-        labels = self.temp['s10'][-2]
+        labels = self.temp['s10'][-2].to(dev)
 
         logits = torch.square(torch.linalg.matrix_norm(torch.subtract(row, rem))).squeeze()
         for k, v in self.temp.items():
@@ -87,7 +87,7 @@ class OneClassLoss(nn.Module):
             rem = x[self.temp[k][-1]]
             logit = torch.square(torch.linalg.matrix_norm(torch.subtract(row, rem))).squeeze()
             logits = torch.vstack((logits, logit))
-            labels = torch.cat((labels, self.temp[k][-2]), dim=0)
+            labels = torch.cat((labels, self.temp[k][-2].to(dev)), dim=0)
 
         l1 = self.crit(logits, labels)
         l2 = -self.reg*calc_psd(x.squeeze())
