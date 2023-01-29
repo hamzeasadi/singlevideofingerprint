@@ -115,9 +115,9 @@ def main():
     X1, X2 = next(iter(trainl))
     print(X1.shape, X2.shape)
     print(X1.squeeze(dim=0).shape)
-    print(X1[0, 0])
+    # print(X1[0, 0])
 
-    print(coordxy)
+    # print(coordxy)
   
 
 

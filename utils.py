@@ -89,6 +89,7 @@ class OneClassLoss(nn.Module):
             logits = torch.vstack((logits, logit))
             labels = torch.cat((labels, self.temp[k][-2].to(dev)), dim=0)
 
+        # print(logits.shape, labels.shape)
         l1 = self.crit(logits, labels)
         l2 = -self.reg*calc_psd(x.squeeze())
         return l1 + l2
@@ -121,10 +122,11 @@ class KeepTrack():
 
 
 def main():
-    x1 = torch.randn(size=(4, 1, 3, 3))
-    x2 = torch.randn(size=(4, 1, 3, 3))
+    x1 = torch.randn(size=(64, 1, 3, 3))
+    x2 = torch.randn(size=(64, 1, 3, 3))
 
-    loss = OneClassLoss(batch_size=4, group_size=2, reg=0.00001)
+    loss = OneClassLoss(batch_size=64, group_size=2, reg=0.00001)
+    loss(x1, x2)
  
 
 
