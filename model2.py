@@ -31,7 +31,7 @@ class VideoPrint(nn.Module):
     def forward(self, x1, x2):
         out1 = self.noisext(x1)
         out2 = self.noisext(x2)
-        res1, res2 = x1[:, 0, :, :]-out1, x2[:, 0, :, :]-out2
+        res1, res2 = x1[:, 0:1, :, :]-out1, x2[:, 0:1, :, :]-out2
         return (res1, res2)
 
 
@@ -39,10 +39,14 @@ class VideoPrint(nn.Module):
 
 def main():
     x = torch.randn(size=(10, 1, 64, 64))
-    model = VideoPrint(inch=1, depth=20)
-    summary(model, input_size=[[10, 1, 64, 64], [10, 1, 64, 64]])
-    # model = torch.load(os.path.join(cfg.paths['model'], 'dncnn_15.pth'))
-    # summary(model, input_size=[10, 1, 48, 48])
+    # model = VideoPrint(inch=1, depth=20)
+    # summary(model, input_size=[[10, 1, 64, 64], [10, 1, 64, 64]])
+    # # model = torch.load(os.path.join(cfg.paths['model'], 'dncnn_15.pth'))
+    # # summary(model, input_size=[10, 1, 48, 48])
+    x1 = torch.randn(size=(5, 3, 3, 3))
+    x2 = torch.randn(size=(5, 1, 3, 3))
+    diff = x1[:, 0:1, :, :] - x2
+    print(diff.shape)
 
 
 if __name__ == '__main__':
