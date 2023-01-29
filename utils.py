@@ -2,7 +2,7 @@ import numpy as np
 import os
 import torch
 from torch import nn
-
+from torch.optim import Optimizer
 
 dev = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -92,9 +92,32 @@ class OneClassLoss(nn.Module):
         l1 = self.crit(logits, labels)
         l2 = -self.reg*calc_psd(x.squeeze())
         return l1 + l2
-        # return l1, l2
         
        
+class KeepTrack():
+    def __init__(self, path) -> None:
+        self.path = path
+        self.state = dict(model="", opt="", epoch=1, trainloss=0.1, valloss=0.1)
+
+    def save_ckp(self, model: nn.Module, opt: Optimizer, epoch, fname: str, trainloss=0.1, valloss=0.1):
+        self.state['model'] = model.state_dict()
+        self.state['opt'] = opt.state_dict()
+        self.state['epoch'] = epoch
+        self.state['trainloss'] = trainloss
+        self.state['valloss'] = valloss
+        save_path = os.path.join(self.path, fname)
+        torch.save(obj=self.state, f=save_path)
+
+    def load_ckp(self, fname):
+        state = torch.load(os.path.join(self.path, fname), map_location=dev)
+        return state
+
+
+
+
+
+
+
 
 
 def main():

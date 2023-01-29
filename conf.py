@@ -8,7 +8,8 @@ data = os.path.join(root, 'data')
 
 paths = dict(
     root=root, data=data, iframes=os.path.join(data, 'iframes'), 
-    videos=os.path.join(data, 'videos'), model=os.path.join(data, 'model')
+    videos=os.path.join(data, 'videos'), model=os.path.join(data, 'model'),
+    train=os.path.join(data, 'iframes', 'train'), val=os.path.join(data, 'iframes', 'val')
 )
 
 
