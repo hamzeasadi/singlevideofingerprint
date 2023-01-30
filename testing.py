@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 import utils
 import datasetup as dst
 import model as m
+import model2 as m2
 import cv2
 
 
@@ -124,13 +125,16 @@ def result(modelpath, coordinate=False):
         model_state_dict = state['model']
         if coordinate:
             inch=3
-        net = m.VideoPrint(inch=inch, depth=20)
+            net = m2.VideoPrint(inch=inch, depth=20)
+        else:
+            net = m.VideoPrint(inch=inch, depth=20)
+
         net.load_state_dict(model_state_dict)
         
             
 
-        noiseset1 = [imgset1[0]]
-        noiseset2 = [imgset2[0]]
+        noiseset1 = []
+        noiseset2 = []
         l = len(imgset1)
         net.eval()
         with torch.no_grad():
@@ -155,8 +159,8 @@ def result(modelpath, coordinate=False):
 def main():
     
     # mn = 'singlecamfingerprint_38.pt'
-    modelpath = cfg.paths['model']
-    result(modelpath=modelpath, coordinate=False)
+    modelpath = cfg.paths['model2']
+    result(modelpath=modelpath, coordinate=True)
     
     # x = torch.zeros(size=(1,1, 3, 3))
     # y = x.clone()

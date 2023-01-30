@@ -38,15 +38,19 @@ class VideoPrint(nn.Module):
 
 
 def main():
-    x = torch.randn(size=(10, 1, 64, 64))
+    x = torch.randn(size=(10, 3, 64, 64))
     # model = VideoPrint(inch=1, depth=20)
     # summary(model, input_size=[[10, 1, 64, 64], [10, 1, 64, 64]])
     # # model = torch.load(os.path.join(cfg.paths['model'], 'dncnn_15.pth'))
     # # summary(model, input_size=[10, 1, 48, 48])
-    x1 = torch.randn(size=(5, 3, 3, 3))
-    x2 = torch.randn(size=(5, 1, 3, 3))
-    diff = x1[:, 0:1, :, :] - x2
-    print(diff.shape)
+    # x1 = torch.randn(size=(5, 3, 3, 3))
+    # x2 = torch.randn(size=(5, 1, 3, 3))
+    # diff = x1[:, 0:1, :, :] - x2
+    # print(diff.shape)
+    model = VideoPrint()
+    res1, res2 = model(x, x)
+    print(res1.shape, res2.shape)
+
 
 
 if __name__ == '__main__':
