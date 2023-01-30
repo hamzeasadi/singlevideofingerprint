@@ -9,10 +9,10 @@ import model as m
 import cv2
 
 
+dev = torch.device('cpu')
+testdata = cfg.paths['val']
 
-testdata = os.path.cfg['val']
-
-def add_noise(img, sigma, mean, h1=100, h2=200, w1=100, w2=200):
+def add_noise(img, sigma=1, mean=0, h1=100, h2=200, w1=100, w2=200):
     """
     h1<h2, w1<w2
     """
@@ -81,16 +81,14 @@ def result(modelpath, modelname):
 
     noiseset1 = []
     noiseset2 = []
-
+    l = len(imgset1)
     net.eval()
     with torch.no_grad():
-        for img in imgset1:
-            noise = net(img[1:2, :, :].unsqueeze(dim=0))
-            noiseset1.append(noise)
+        for i in range(l):
+            noise1, noise2 = net(imgset1[i][1:2, :, :].unsqueeze(dim=0), imgset2[i][1:2, :, :].unsqueeze(dim=0))
+            noiseset1.append(noise1)
+            noiseset2.append(noise2)
 
-        for img in imgset2:
-            noise = net(img[1:2, :, :].unsqueeze(dim=0))
-            noiseset2.append(noise)
     list1 = [img.detach().squeeze().numpy() for img in noiseset1]
     list1.append(imgset1[0].detach().squeeze().permute(1, 2, 0).numpy())
     list2 = [img.detach().squeeze().numpy() for img in noiseset2]
