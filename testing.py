@@ -90,9 +90,9 @@ def result(modelpath, modelname):
             noiseset2.append(noise2)
 
     list1 = [img.detach().squeeze().numpy() for img in noiseset1]
-    list1.append(imgset1[0].detach().squeeze().permute(1, 2, 0).numpy())
+    # list1.append(imgset1[0].detach().squeeze().permute(1, 2, 0).numpy())
     list2 = [img.detach().squeeze().numpy() for img in noiseset2]
-    list2.append(imgset2[0].detach().squeeze().permute(1, 2, 0).numpy())
+    # list2.append(imgset2[0].detach().squeeze().permute(1, 2, 0).numpy())
 
     visulize(list1img=list1, list2img=list2)
 
