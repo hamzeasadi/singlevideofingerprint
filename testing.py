@@ -16,7 +16,7 @@ def add_noise(img, sigma=1, mean=0, h1=100, h2=200, w1=100, w2=200):
     """
     h1<h2, w1<w2
     """
-    imgt = torch.from_numpy(img)
+    imgt = torch.from_numpy(img).float()
     noisypart = imgt[h1:h2, w1:w2, :]
     filter = torch.randn_like(noisypart)*sigma + mean
     imgt[h1:h2, w1:w2, :] = filter
@@ -26,7 +26,7 @@ def copy_move(img, h1=100, h2=200, w1=100, w2=200, d=100):
     """
     d<100
     """
-    imgt = torch.from_numpy(img)
+    imgt = torch.from_numpy(img).float()
     copypart = imgt[h1:h2, w1:w2, :]
     imgt[h1+d:h2+d, w1+d:w2+d, :] = copypart
     return imgt.permute(2, 0, 1)
@@ -36,7 +36,7 @@ def splicing(img, splicimg, h1=100, h2=200, w1=100, w2=200):
     """
     h2>h1, w2>w1
     """
-    imgt = torch.from_numpy(img)
+    imgt = torch.from_numpy(img).float()
     splicet = torch.from_numpy(splicimg)
     splicepart = splicet[h1:h2, w1:w2, :]
     imgt[h1:h2, w1:w2, :] = splicepart
@@ -53,8 +53,8 @@ def imgman(imgpath):
     img1 = cv2.imread(os.path.join(imgpath, imgs[0]))
     img2 = cv2.imread(os.path.join(imgpath, imgs[1]))
 
-    firsttuple = [torch.from_numpy(img1), add_noise(img1), copy_move(img1), splicing(img1, img2)]
-    secondtuple = [torch.from_numpy(img2), add_noise(img2), copy_move(img2), splicing(img2, img1)]
+    firsttuple = [torch.from_numpy(img1).float(), add_noise(img1), copy_move(img1), splicing(img1, img2)]
+    secondtuple = [torch.from_numpy(img2).float(), add_noise(img2), copy_move(img2), splicing(img2, img1)]
     return firsttuple, secondtuple
 
 def visulize(list1img, list2img):
