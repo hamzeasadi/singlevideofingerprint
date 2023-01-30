@@ -117,7 +117,7 @@ def result(modelpath, coordinate=False):
             inch=3
         net = m.VideoPrint(inch=inch, depth=20)
         net.load_state_dict(model_state_dict)
-        imgset1 , imgset2 = imgman(imgpath=testdata, coord=coordinate)
+        imgset1 , imgset2 = imgman(datapath=testdata, coord=coordinate)
             
 
         noiseset1 = []
