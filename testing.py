@@ -82,25 +82,19 @@ def imgman(datapath, coord=False):
     img2 = cv2.imread(os.path.join(imgfolderpath, imgs[1]))/255
     
     crop1 = cropimg(img1, coord=coord)
-    crop1shape = crop1.shape
     crop2 = cropimg(img2, coord=coord)
-    crop2shape = crop2.shape
-    crop1c = torch.randn(size=crop1shape)
-    crop1c = crop1
-    crop1n = torch.randn(size=crop1shape)
-    crop1n = crop1
-    crop1s = torch.randn(size=crop1shape)
-    crop1s = crop1
-    crop2c = torch.randn(size=crop2shape)
-    crop2c = crop2
-    crop2n = torch.randn(size=crop2shape)
-    crop2n = crop2
-    crop2s = torch.randn(size=crop2shape)
-    crop2s = crop2
+
+    crop1c = crop1.clone()
+    crop1n = crop1.clone()
+    crop1s = crop1.clone()
+    
+    crop2c = crop2.clone()
+    crop2n =crop2.clone()
+    crop2s = crop2.clone()
 
     
-    firsttuple = [crop1, add_noise(crop1n), copy_move(crop1s), splicing(crop1c, crop2c)]
-    secondtuple = [crop2, add_noise(crop2n), copy_move(crop2s), splicing(crop2c, crop1c)]
+    firsttuple = [crop1, add_noise(crop1n), copy_move(crop1c), splicing(crop1s, crop2s)]
+    secondtuple = [crop2, add_noise(crop2n), copy_move(crop2c), splicing(crop2s, crop1s)]
 
     return firsttuple, secondtuple
 
@@ -161,17 +155,13 @@ def main():
     
     # mn = 'singlecamfingerprint_38.pt'
     modelpath = cfg.paths['model']
-    result(modelpath=modelpath, coordinate=False)
-    # x = torch.randn(size=(2, 4, 256, 256))
-    # x = x.numpy()
-    # fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(16, 8))
-    # for i in range(4):
-    #     axs[0, i].imshow(x[0, i], cmap='gray')
-    #     axs[0, i].axis('off')
-    #     axs[1, i].imshow(x[0, i], cmap='gray')
-    #     axs[1, i].axis('off')
-    # plt.subplots_adjust(wspace=0.01, hspace=0.01)
-    # plt.show()
+    # result(modelpath=modelpath, coordinate=False)
+    
+    x = torch.zeros(size=(1,1, 3, 3))
+    y = x.clone()
+    x[0, 0, 0,0] = 10
+    print(x)
+    print(y)
 
 
 
