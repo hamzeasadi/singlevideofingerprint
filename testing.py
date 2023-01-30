@@ -45,7 +45,7 @@ def splicing(img, splicimg, h1=100, h2=200, w1=100, w2=200):
 
 
 
-kk = 0    
+  
 
 def imgman(imgpath):
     imglist = os.listdir(imgpath)
@@ -57,7 +57,7 @@ def imgman(imgpath):
     secondtuple = [torch.from_numpy(img2).float(), add_noise(img2), copy_move(img2), splicing(img2, img1)]
     return firsttuple, secondtuple
 
-def visulize(list1img, list2img):
+def visulize(list1img, list2img, kk):
     l = len(list1img)
     fig, axs = plt.subplots(nrows=2, ncols=l)
     for i in range(l):
@@ -70,7 +70,7 @@ def visulize(list1img, list2img):
     plt.savefig(os.path.join(cfg.paths['model'], f'{kk}.png'))
 
 
-def result(modelpath, modelname):
+def result(modelpath, modelname, kk):
     kt = utils.KeepTrack(path=modelpath)
     state = kt.load_ckp(fname=modelname)
     # model="", opt="", epoch=1, trainloss=0.1, valloss=0.1
@@ -94,7 +94,7 @@ def result(modelpath, modelname):
     list2 = [img.detach().squeeze().numpy() for img in noiseset2]
     # list2.append(imgset2[0].detach().squeeze().permute(1, 2, 0).numpy())
 
-    visulize(list1img=list1, list2img=list2)
+    visulize(list1img=list1, list2img=list2, kk=kk)
 
 
     
@@ -110,8 +110,7 @@ def main():
     modelpath = cfg.paths['model']
     for i in range(39):
         mn = models[i]
-        kk=i
-        result(modelpath=modelpath, modelname=mn)
+        result(modelpath=modelpath, modelname=mn, kk=i)
         # kk = i
 
 
