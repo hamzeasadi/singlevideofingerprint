@@ -105,8 +105,9 @@ def result(modelpath, modelname):
 
 
 def main():
-    mn = ''
+    mn = 'singlecamfingerprint_38.pt'
     modelpath = cfg.paths['model']
+    result(modelpath=modelpath, modelname=mn)
 
 
 
