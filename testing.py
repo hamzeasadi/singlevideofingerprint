@@ -12,54 +12,86 @@ import cv2
 dev = torch.device('cpu')
 testdata = cfg.paths['val']
 
-def add_noise(img, sigma=1, mean=0, h1=100, h2=200, w1=100, w2=200):
-    """
-    h1<h2, w1<w2
-    """
-    imgt = torch.from_numpy(img).float()
-    noisypart = imgt[h1:h2, w1:w2, :]
+def add_noise(img, sigma=1, mean=0):
+    b, c, h, w = img.shape
+    hc, wc = h//2, w//2
+    noisypart = img[:, 0:1, hc-32:hc+32, wc-32:wc+32]
     filter = torch.randn_like(noisypart)*sigma + mean
-    imgt[h1:h2, w1:w2, :] = filter
-    return imgt.permute(2, 0, 1)
-
-def copy_move(img, h1=100, h2=200, w1=100, w2=200, d=100):
-    """
-    d<100
-    """
-    imgt = torch.from_numpy(img).float()
-    copypart = imgt[h1:h2, w1:w2, :]
-    imgt[h1+d:h2+d, w1+d:w2+d, :] = copypart
-    return imgt.permute(2, 0, 1)
+    img[:, 0:1, hc-32:hc+32, wc-32:wc+32] = filter
+    return img
 
 
-def splicing(img, splicimg, h1=100, h2=200, w1=100, w2=200):
-    """
-    h2>h1, w2>w1
-    """
-    imgt = torch.from_numpy(img).float()
-    splicet = torch.from_numpy(splicimg)
-    splicepart = splicet[h1:h2, w1:w2, :]
-    imgt[h1:h2, w1:w2, :] = splicepart
-    return imgt.permute(2, 0, 1)
+def copy_move(img, d=64):
+    b, c, h, w = img.shape
+    hc, wc = h//2, w//2
+    copypart = img[:, :, hc-32:hc+32, wc-32:wc+32]
+    img[:, :, hc-32+d:hc+32+d, wc-32+d:wc+32+d] = copypart
+    return img
 
 
+def splicing(img, splicimg):
+    b, c, h, w = img.shape
+    hc, wc = h//2, w//2
+    b1, c1, h1, w1 = splicimg.shape
+    h1c, w1c = h1//2, w1//2
+    splicepart = splicimg[:, :, h1c-32:h1c+32, w1c-32:w1c+32]
+    img[:, :, hc-32:hc+32, wc-32:wc+32] = splicepart
+    return img
+
+
+
+def coordinate(High, Width):
+    xcoord = torch.ones(size=(High, Width), dtype=torch.float32)
+    ycoord = torch.ones(size=(High, Width), dtype=torch.float32)
+    for i in range(High):
+        xcoord[i, :] = 2*(i/High) - 1
+    for j in range(Width):
+        ycoord[:, j] = 2*(j/Width) - 1
+    
+    coord = torch.cat((xcoord.unsqueeze(dim=0), ycoord.unsqueeze(dim=0)), dim=0)
+    return coord
+
+
+coordxy = coordinate(High=1080, Width=1920)
+
+def cropimg(img, coord=False):
+    h, w, c = img.shape
+    hc, wc = h//2, w//2
+    crop = img[hc-128:hc+128, wc-128:wc+128, 1:2]
+
+    crop = torch.from_numpy(crop).float().permute(2, 0, 1)
+
+    if coord:
+        coordcrop = coordxy[:, hc-128:hc+128, wc-128:wc+128]
+        crop = torch.cat((crop, coordcrop), dim=0)
+
+    return crop.unsqueeze(dim=0)
 
 
   
 
-def imgman(imgpath):
-    imglist = os.listdir(imgpath)
-    imgs = random.sample(imglist, 2)
-    img1 = cv2.imread(os.path.join(imgpath, imgs[0]))/255
-    img2 = cv2.imread(os.path.join(imgpath, imgs[1]))/255
+def imgman(datapath, coord=False):
 
-    firsttuple = [torch.from_numpy(img1).float(), add_noise(img1), copy_move(img1), splicing(img1, img2)]
-    secondtuple = [torch.from_numpy(img2).float(), add_noise(img2), copy_move(img2), splicing(img2, img1)]
+    imgfolders = os.listdir(datapath)
+    imgfolders = cfg.rm_ds(imgfolders)
+    imgfolder = random.sample(imgfolders, 1)
+    imgfolderpath = os.path.join(datapath, imgfolder[0])
+    imglist = os.listdir(imgfolderpath)
+    imgs = random.sample(imglist, 2)
+    img1 = cv2.imread(os.path.join(imgfolderpath, imgs[0]))/255
+    img2 = cv2.imread(os.path.join(imgfolderpath, imgs[1]))/255
+    
+    crop1 = cropimg(img1, coord=coord)
+    crop2 = cropimg(img2, coord=coord)
+    
+    firsttuple = [crop1, add_noise(crop1), copy_move(crop1), splicing(crop1, crop2)]
+    secondtuple = [crop2, add_noise(crop2), copy_move(crop2), splicing(crop2, crop1)]
     return firsttuple, secondtuple
+
 
 def visulize(list1img, list2img, kk):
     l = len(list1img)
-    fig, axs = plt.subplots(nrows=2, ncols=l)
+    fig, axs = plt.subplots(nrows=2, ncols=l, figsize=(16, 8))
     for i in range(l):
         axs[0, i].imshow(list1img[i], cmap='gray')
         axs[0, i].axis('off')
@@ -70,32 +102,37 @@ def visulize(list1img, list2img, kk):
     plt.savefig(os.path.join(cfg.paths['model'], f'{kk}.png'))
 
 
-def result(modelpath, modelname, kk):
+def result(modelpath, coordinate=False):
     kt = utils.KeepTrack(path=modelpath)
-    state = kt.load_ckp(fname=modelname)
-    # model="", opt="", epoch=1, trainloss=0.1, valloss=0.1
-    model_state_dict = state['model']
-    net = m.VideoPrint(inch=1, depth=20)
-    net.load_state_dict(model_state_dict)
-    imgset1 , imgset2 = imgman(imgpath=testdata)
+    models = os.listdir(modelpath)
+    models = cfg.rm_ds(models)
+    inch=1
+    kk=0
+    for model in models:
+        state = kt.load_ckp(fname=model)
+        model_state_dict = state['model']
+        if coordinate:
+            inch=3
+        net = m.VideoPrint(inch=inch, depth=20)
+        net.load_state_dict(model_state_dict)
+        imgset1 , imgset2 = imgman(imgpath=testdata)
+            
 
-    noiseset1 = []
-    noiseset2 = []
-    l = len(imgset1)
-    net.eval()
-    with torch.no_grad():
-        for i in range(l):
-            noise1, noise2 = net(imgset1[i][1:2, :, :].unsqueeze(dim=0), imgset2[i][1:2, :, :].unsqueeze(dim=0))
-            noiseset1.append(noise1)
-            noiseset2.append(noise2)
+        noiseset1 = []
+        noiseset2 = []
+        l = len(imgset1)
+        net.eval()
+        with torch.no_grad():
+            for i in range(l):
+                noise1, noise2 = net(imgset1[i], imgset2[i])
+                noiseset1.append(noise1)
+                noiseset2.append(noise2)
 
-    list1 = [img.detach().squeeze().numpy() for img in noiseset1]
-    # list1.append(imgset1[0].detach().squeeze().permute(1, 2, 0).numpy())
-    list2 = [img.detach().squeeze().numpy() for img in noiseset2]
-    # list2.append(imgset2[0].detach().squeeze().permute(1, 2, 0).numpy())
+        list1 = [img.detach().squeeze().numpy() for img in noiseset1]
+        list2 = [img.detach().squeeze().numpy() for img in noiseset2]
 
-    visulize(list1img=list1, list2img=list2, kk=kk)
-
+        visulize(list1img=list1, list2img=list2, kk=kk)
+        kk+=1
 
     
 
@@ -105,14 +142,20 @@ def result(modelpath, modelname, kk):
 
 
 def main():
-    models = [f'singlecamfingerprint_{i}.pt' for i in range(39)]
+    
     # mn = 'singlecamfingerprint_38.pt'
     modelpath = cfg.paths['model']
-    for i in range(39):
-        mn = models[i]
-        result(modelpath=modelpath, modelname=mn, kk=i)
-        # kk = i
-
+    result(modelpath=modelpath, coordinate=False)
+    # x = torch.randn(size=(2, 4, 256, 256))
+    # x = x.numpy()
+    # fig, axs = plt.subplots(nrows=2, ncols=4, figsize=(16, 8))
+    # for i in range(4):
+    #     axs[0, i].imshow(x[0, i], cmap='gray')
+    #     axs[0, i].axis('off')
+    #     axs[1, i].imshow(x[0, i], cmap='gray')
+    #     axs[1, i].axis('off')
+    # plt.subplots_adjust(wspace=0.01, hspace=0.01)
+    # plt.show()
 
 
 
