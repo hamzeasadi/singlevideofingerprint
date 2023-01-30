@@ -155,13 +155,13 @@ def main():
     
     # mn = 'singlecamfingerprint_38.pt'
     modelpath = cfg.paths['model']
-    # result(modelpath=modelpath, coordinate=False)
+    result(modelpath=modelpath, coordinate=False)
     
-    x = torch.zeros(size=(1,1, 3, 3))
-    y = x.clone()
-    x[0, 0, 0,0] = 10
-    print(x)
-    print(y)
+    # x = torch.zeros(size=(1,1, 3, 3))
+    # y = x.clone()
+    # x[0, 0, 0,0] = 10
+    # print(x)
+    # print(y)
 
 
 
