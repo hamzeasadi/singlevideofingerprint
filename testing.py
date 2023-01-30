@@ -110,7 +110,8 @@ def visulize(list1img, list2img, kk):
         axs[1, i].axis('off')
     
     plt.subplots_adjust(wspace=0.1, hspace=0.1)
-    plt.savefig(os.path.join(cfg.paths['model'], f'{kk}.png'))
+    plt.savefig(os.path.join(cfg.paths['outpics'], f'{kk}.png'))
+    plt.close('all')
 
 
 def result(modelpath, coordinate=False):

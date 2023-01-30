@@ -7,7 +7,7 @@ root = os.getcwd()
 data = os.path.join(root, 'data')
 
 paths = dict(
-    root=root, data=data, iframes=os.path.join(data, 'iframes'), 
+    root=root, data=data, iframes=os.path.join(data, 'iframes'), outpics=os.path.join(data, 'outpics')
     videos=os.path.join(data, 'videos'), model=os.path.join(data, 'model'), model2=os.path.join(data, 'model2'),
     train=os.path.join(data, 'iframes', 'train'), val=os.path.join(data, 'iframes', 'val')
 )
