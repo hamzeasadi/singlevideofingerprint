@@ -82,12 +82,26 @@ def imgman(datapath, coord=False):
     img2 = cv2.imread(os.path.join(imgfolderpath, imgs[1]))/255
     
     crop1 = cropimg(img1, coord=coord)
+    crop1shape = crop1.shape
     crop2 = cropimg(img2, coord=coord)
+    crop2shape = crop2.shape
+    crop1c = torch.randn(size=crop1shape)
+    crop1c = crop1
+    crop1n = torch.randn(size=crop1shape)
+    crop1n = crop1
+    crop1s = torch.randn(size=crop1shape)
+    crop1s = crop1
+    crop2c = torch.randn(size=crop2shape)
+    crop2c = crop2
+    crop2n = torch.randn(size=crop2shape)
+    crop2n = crop2
+    crop2s = torch.randn(size=crop2shape)
+    crop2s = crop2
+
     
-    # firsttuple = [crop1, add_noise(crop1), copy_move(crop1), splicing(crop1, crop2)]
-    # secondtuple = [crop2, add_noise(crop2), copy_move(crop2), splicing(crop2, crop1)]
-    firsttuple = [crop1, crop1, crop1, crop1]
-    secondtuple = [crop2, add_noise(crop2), copy_move(crop2), splicing(crop2, crop1)]
+    firsttuple = [crop1, add_noise(crop1n), copy_move(crop1s), splicing(crop1c, crop2c)]
+    secondtuple = [crop2, add_noise(crop2n), copy_move(crop2s), splicing(crop2c, crop1c)]
+
     return firsttuple, secondtuple
 
 
