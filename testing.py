@@ -17,7 +17,7 @@ def add_noise(img, sigma=1, mean=0):
     hc, wc = h//2, w//2
     noisypart = img[:, 0:1, hc-32:hc+32, wc-32:wc+32]
     filter = torch.randn_like(noisypart)*sigma + mean
-    img[:, 0:1, hc-32:hc+32, wc-32:wc+32] = filter
+    img[:, 0:1, hc-32:hc+32, wc-32:wc+32] = filter + noisypart
     return img
 
 
@@ -84,7 +84,9 @@ def imgman(datapath, coord=False):
     crop1 = cropimg(img1, coord=coord)
     crop2 = cropimg(img2, coord=coord)
     
-    firsttuple = [crop1, add_noise(crop1), copy_move(crop1), splicing(crop1, crop2)]
+    # firsttuple = [crop1, add_noise(crop1), copy_move(crop1), splicing(crop1, crop2)]
+    # secondtuple = [crop2, add_noise(crop2), copy_move(crop2), splicing(crop2, crop1)]
+    firsttuple = [crop1, crop1, crop1, crop1]
     secondtuple = [crop2, add_noise(crop2), copy_move(crop2), splicing(crop2, crop1)]
     return firsttuple, secondtuple
 
@@ -115,7 +117,7 @@ def result(modelpath, coordinate=False):
             inch=3
         net = m.VideoPrint(inch=inch, depth=20)
         net.load_state_dict(model_state_dict)
-        imgset1 , imgset2 = imgman(imgpath=testdata)
+        imgset1 , imgset2 = imgman(imgpath=testdata, coord=coordinate)
             
 
         noiseset1 = []
