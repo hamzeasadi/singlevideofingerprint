@@ -101,7 +101,7 @@ def imgman(datapath, coord=False):
 
 def visulize(list1img, list2img, kk):
     l = len(list1img)
-    fig, axs = plt.subplots(nrows=2, ncols=l, figsize=(16, 8))
+    fig, axs = plt.subplots(nrows=2, ncols=l, figsize=(20, 8))
     for i in range(l):
         axs[0, i].imshow(list1img[i], cmap='gray')
         axs[0, i].axis('off')
@@ -118,6 +118,7 @@ def result(modelpath, coordinate=False):
     models = cfg.rm_ds(models)
     inch=1
     kk=0
+    imgset1 , imgset2 = imgman(datapath=testdata, coord=coordinate)
     for model in models:
         state = kt.load_ckp(fname=model)
         model_state_dict = state['model']
@@ -125,11 +126,11 @@ def result(modelpath, coordinate=False):
             inch=3
         net = m.VideoPrint(inch=inch, depth=20)
         net.load_state_dict(model_state_dict)
-        imgset1 , imgset2 = imgman(datapath=testdata, coord=coordinate)
+        
             
 
-        noiseset1 = []
-        noiseset2 = []
+        noiseset1 = [imgset1[0]]
+        noiseset2 = [imgset2[0]]
         l = len(imgset1)
         net.eval()
         with torch.no_grad():
