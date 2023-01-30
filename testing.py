@@ -50,8 +50,8 @@ kk = 0
 def imgman(imgpath):
     imglist = os.listdir(imgpath)
     imgs = random.sample(imglist, 2)
-    img1 = cv2.imread(os.path.join(imgpath, imgs[0]))
-    img2 = cv2.imread(os.path.join(imgpath, imgs[1]))
+    img1 = cv2.imread(os.path.join(imgpath, imgs[0]))/255
+    img2 = cv2.imread(os.path.join(imgpath, imgs[1]))/255
 
     firsttuple = [torch.from_numpy(img1).float(), add_noise(img1), copy_move(img1), splicing(img1, img2)]
     secondtuple = [torch.from_numpy(img2).float(), add_noise(img2), copy_move(img2), splicing(img2, img1)]
@@ -59,7 +59,7 @@ def imgman(imgpath):
 
 def visulize(list1img, list2img):
     l = len(list1img)
-    axs, fig = plt.subplots(nrows=2, ncols=l)
+    fig, axs = plt.subplots(nrows=2, ncols=l)
     for i in range(l):
         axs[0, i].imshow(list1img[i], cmap='gray')
         axs[0, i].axis('off')
