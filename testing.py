@@ -45,7 +45,7 @@ def splicing(img, splicimg, h1=100, h2=200, w1=100, w2=200):
 
 
 
-    
+kk = 0    
 
 def imgman(imgpath):
     imglist = os.listdir(imgpath)
@@ -67,7 +67,7 @@ def visulize(list1img, list2img):
         axs[1, i].axis('off')
     
     plt.subplots_adjust(wspace=0.1, hspace=0.1)
-    plt.show()
+    plt.savefig(os.path.join(cfg.paths['model'], f'{kk}.png'))
 
 
 def result(modelpath, modelname):
@@ -105,9 +105,14 @@ def result(modelpath, modelname):
 
 
 def main():
-    mn = 'singlecamfingerprint_38.pt'
+    models = [f'singlecamfingerprint_{i}.pt' for i in range(39)]
+    # mn = 'singlecamfingerprint_38.pt'
     modelpath = cfg.paths['model']
-    result(modelpath=modelpath, modelname=mn)
+    for i in range(39):
+        mn = models[i]
+        kk=i
+        result(modelpath=modelpath, modelname=mn)
+        # kk = i
 
 
 
