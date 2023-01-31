@@ -57,6 +57,7 @@ class NoisPrintData(Dataset):
         self.bs = batch_size
         self.temp = datatemp(datapath=datapath, H=64, W=64, href=1080, wref=1920)
         self.patchids = list(self.temp.keys())
+        print(len(self.patchids))
 
     def getpair(self, patchid):
         coords = coordinate(High=1080, Width=1920)
@@ -99,8 +100,8 @@ class NoisPrintData(Dataset):
        
 
 def createdl():
-    traindataset = NoisPrintData(datapath=cfg.paths['train'], batch_size=64)
-    valdataset = NoisPrintData(datapath=cfg.paths['val'], batch_size=64)
+    traindataset = NoisPrintData(datapath=cfg.paths['train'], batch_size=100)
+    valdataset = NoisPrintData(datapath=cfg.paths['val'], batch_size=100)
     return DataLoader(traindataset, batch_size=1), DataLoader(valdataset, batch_size=1)
 
         
@@ -111,14 +112,11 @@ def createdl():
 
 def main():
     print(2)
-    trainl, vall = createdl()
-    X1, X2 = next(iter(trainl))
-    print(X1.shape, X2.shape)
-    print(X1.squeeze(dim=0).shape)
-    # print(X1[0, 0])
-
-    # print(coordxy)
-  
+    # temp = datatemp(data)
+    dataset = NoisPrintData(datapath=cfg.paths['train'], batch_size=100)
+    X1, X2 = dataset[0]
+    print(X1.shape)
+    print(X2.shape)
 
 
 if __name__ == '__main__':
