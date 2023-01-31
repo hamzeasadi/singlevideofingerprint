@@ -50,7 +50,7 @@ def main():
     model = nn.DataParallel(model)
     model.to(dev)
     optimizer = optim.Adam(params=model.parameters(), lr=3e-4)
-    crt = utils.OneClassLoss(batch_size=100, group_size=2, reg=0.1)
+    crt = utils.OneClassLoss(batch_size=100, group_size=2, reg=10.0)
 
     if args.train:
         train(Net=model, optfunc=optimizer, lossfunc=crt, epochs=args.epochs, modelname=args.modelname)
