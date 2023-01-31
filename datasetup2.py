@@ -3,6 +3,7 @@ import cv2
 import torch
 from torch.utils.data import Dataset, DataLoader
 import conf as cfg
+import numpy as np
 
 
 def datatemp(datapath:str, H=64, W=64, href=1080, wref=1920):
@@ -42,7 +43,9 @@ coordxy = coordinate(High=1080, Width=1920)
 
 def cropimg(img, hi, wi, H=64, W=64):
     coordcrop = coordxy[:, hi:hi+H, wi:wi+W]
-    imgc = torch.from_numpy(img[hi:hi+H, wi:wi+W, 1:2]/256).permute(2, 0, 1)
+    cropp = img[hi:hi+H, wi:wi+W, 1:2]
+    croppn = (cropp - np.min(cropp))/(np.max(cropp) - np.min(cropp))
+    imgc = torch.from_numpy(croppn).permute(2, 0, 1)
 
     return torch.cat((imgc, coordcrop), dim=0)
 
@@ -113,10 +116,14 @@ def createdl():
 def main():
     print(2)
     # temp = datatemp(data)
-    dataset = NoisPrintData(datapath=cfg.paths['train'], batch_size=100)
-    X1, X2 = dataset[0]
-    print(X1.shape)
-    print(X2.shape)
+    # dataset = NoisPrintData(datapath=cfg.paths['train'], batch_size=100)
+    # X1, X2 = dataset[0]
+    # print(X1.shape)
+    # print(X2.shape)
+    x = np.random.randint(low=1, high=10, size=(1, 4, 4))
+    print(x)
+    x = (x - np.min(x))/(np.max(x) - np.min(x))
+    print(x)
 
 
 if __name__ == '__main__':
