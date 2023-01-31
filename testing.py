@@ -79,8 +79,8 @@ def imgman(datapath, coord=False):
     imgfolderpath = os.path.join(datapath, imgfolder[0])
     imglist = os.listdir(imgfolderpath)
     imgs = random.sample(imglist, 2)
-    img1 = cv2.imread(os.path.join(imgfolderpath, imgs[0]))/255
-    img2 = cv2.imread(os.path.join(imgfolderpath, imgs[1]))/255
+    img1 = cv2.imread(os.path.join(imgfolderpath, imgs[0]))/256
+    img2 = cv2.imread(os.path.join(imgfolderpath, imgs[1]))/256
     
     crop1 = cropimg(img1, coord=coord)
     crop2 = cropimg(img2, coord=coord)
@@ -123,6 +123,7 @@ def result(modelpath, coordinate=False):
     imgset1 , imgset2 = imgman(datapath=testdata, coord=coordinate)
     for model in models:
         state = kt.load_ckp(fname=model)
+        print(state['trainloss'], state['valloss'])
         model_state_dict = state['model']
         if coordinate:
             inch=3
@@ -130,7 +131,7 @@ def result(modelpath, coordinate=False):
         else:
             net = m.VideoPrint(inch=inch, depth=20)
 
-        net.load_state_dict(model_state_dict)
+        net.load_state_dict(model_state_dict, strict=False)
         
             
 
@@ -160,7 +161,7 @@ def result(modelpath, coordinate=False):
 def main():
     
     # mn = 'singlecamfingerprint_38.pt'
-    modelpath = cfg.paths['model2']
+    modelpath = cfg.paths['model']
     result(modelpath=modelpath, coordinate=True)
     
     # x = torch.zeros(size=(1,1, 3, 3))
