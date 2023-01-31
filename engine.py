@@ -18,7 +18,7 @@ def train_setp(net: nn.Module, data:DataLoader, opt:Optimizer, criterion:nn.Modu
     for (X1, X2) in data:
         X1 = X1.squeeze(dim=0).to(dev)
         X2 = X2.squeeze(dim=0).to(dev)
-        (_, _), (res1, res2) = net(X1, X2)
+        res1, res2 = net(X1, X2)
         loss = criterion(res1, res2)
         opt.zero_grad()
         loss.backward()
@@ -36,7 +36,7 @@ def val_setp(net: nn.Module, data:DataLoader, opt:Optimizer, criterion:nn.Module
         for (X1, X2) in data:
             X1 = X1.squeeze(dim=0).to(dev)
             X2 = X2.squeeze(dim=0).to(dev)
-            (_, _), (res1, res2) = net(X1, X2)
+            res1, res2 = net(X1, X2)
             loss = criterion(res1, res2)
             epochloss+=loss.item()
 
