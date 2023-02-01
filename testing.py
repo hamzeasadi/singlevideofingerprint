@@ -8,6 +8,7 @@ import datasetup as dst
 import model as m
 import model2 as m2
 import cv2
+import numpy as np
 
 
 dev = torch.device('cpu')
@@ -79,8 +80,11 @@ def imgman(datapath, coord=False):
     imgfolderpath = os.path.join(datapath, imgfolder[0])
     imglist = os.listdir(imgfolderpath)
     imgs = random.sample(imglist, 2)
-    img1 = cv2.imread(os.path.join(imgfolderpath, imgs[0]))/256
-    img2 = cv2.imread(os.path.join(imgfolderpath, imgs[1]))/256
+    img1u = cv2.imread(os.path.join(imgfolderpath, imgs[0]))
+    img2u = cv2.imread(os.path.join(imgfolderpath, imgs[1]))
+
+    img1 = (img1u - np.min(img1u))/(np.max(img1u) - np.min(img1u))
+    img2 = (img2u - np.min(img2u))/(np.max(img2u) - np.min(img2u))
     
     crop1 = cropimg(img1, coord=coord)
     crop2 = cropimg(img2, coord=coord)
