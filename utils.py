@@ -125,7 +125,17 @@ def main():
     x1 = torch.randn(size=(64, 1, 3, 3))
     x2 = torch.randn(size=(64, 1, 3, 3))
 
-    
+    x = torch.rand(size=(20, 1, 64, 64))
+    # x = torch.randint(low=0, high=100, size=(20, 1, 64, 64))/100
+    y = (torch.randn(size=(20, 1, 64, 64))+10000)
+    x = torch.abs(x)
+    # y = torch.abs(y)
+    x = torch.FloatTensor(20, 1, 64, 64).uniform_(0, 1)+10000
+    uniforml = calc_psd(x)
+    normall = calc_psd(y)
+    # print(x)
+    # print(y)
+    print(f"uniform={uniforml}, normal={normall}")
 
  
 
