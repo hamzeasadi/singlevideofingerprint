@@ -125,13 +125,7 @@ def main():
     x1 = torch.randn(size=(64, 1, 3, 3))
     x2 = torch.randn(size=(64, 1, 3, 3))
 
-    x = torch.ones(size=(64, 1, 64, 64))
-    x = torch.rand(size=(64, 1, 64, 64))
-    y = torch.randn(size=(64, 1, 64, 64))
-    xpsd = calc_psd(x)
-    ypsd = calc_psd(y)
-    print(xpsd)
-    print(ypsd)
+    
 
  
 

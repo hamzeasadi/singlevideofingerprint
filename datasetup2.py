@@ -27,6 +27,32 @@ def datatemp(datapath:str, H=64, W=64, href=1080, wref=1920):
     return tmp
 
 
+
+
+def datatemp2(datapath:str, H=64, W=64, href=1080, wref=1920):
+    hstart = (href%64)//2
+    wstart = 0
+    numh = href//64
+    numw = wref//64
+    # (folderid, hi, wi)
+    tmp = dict()
+    folders = os.listdir(datapath)
+    folders = cfg.rm_ds(folders)
+    patch_cnt = 0
+    for folder in folders:
+        folderpath = os.path.join(datapath, folder)
+        uniquepatch = 0
+        for i in range(numh):
+            hi = hstart + i*H
+            for j in range(numw):
+                wi = wstart + j*W
+                tmp[f'patch{patch_cnt}'] = (uniquepatch, folderpath, hi, wi)
+                patch_cnt+=1
+                uniquepatch+=1
+    return tmp
+
+
+
 def coordinate(High, Width):
     xcoord = torch.ones(size=(High, Width), dtype=torch.float32)
     ycoord = torch.ones(size=(High, Width), dtype=torch.float32)
@@ -42,12 +68,13 @@ def coordinate(High, Width):
 coordxy = coordinate(High=1080, Width=1920)
 
 def cropimg(img, hi, wi, H=64, W=64):
-    coordcrop = coordxy[:, hi:hi+H, wi:wi+W]
+    # coordcrop = coordxy[:, hi:hi+H, wi:wi+W]
     cropp = img[hi:hi+H, wi:wi+W, 1:2]
     croppn = (cropp - np.min(cropp))/(np.max(cropp) - np.min(cropp)+0.000001)
     imgc = torch.from_numpy(croppn).permute(2, 0, 1)
 
-    return torch.cat((imgc, coordcrop), dim=0)
+    # return torch.cat((imgc, coordcrop), dim=0)
+    return imgc
 
 
 class NoisPrintData(Dataset):
@@ -63,7 +90,7 @@ class NoisPrintData(Dataset):
         print(len(self.patchids))
 
     def getpair(self, patchid):
-        coords = coordinate(High=1080, Width=1920)
+        # coords = coordinate(High=1080, Width=1920)
         folderpath, h, w = self.temp[patchid]
         iframelist = os.listdir(folderpath)
         subiframes = random.sample(iframelist, 4)
@@ -120,11 +147,8 @@ def main():
     # X1, X2 = dataset[0]
     # print(X1.shape)
     # print(X2.shape)
-    x = np.random.randint(low=1, high=10, size=(1, 4, 4))
-    print(x)
-    x = (x - np.min(x))/(np.max(x) - np.min(x))
-    print(x)
-
+    temp = datatemp2(datapath=cfg.paths['train'], H=64, W=64, href=1080, wref=1920)
+    print(temp)
 
 if __name__ == '__main__':
     main()
