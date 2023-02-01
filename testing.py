@@ -54,18 +54,18 @@ def coordinate(High, Width):
     return coord
 
 
-coordxy = coordinate(High=1080, Width=1920)
+# coordxy = coordinate(High=1080, Width=1920)
 
 def cropimg(img, coord=False):
     h, w, c = img.shape
     hc, wc = h//2, w//2
     crop = img[hc-128:hc+128, wc-128:wc+128, 1:2]
-
+    crop = 2*((crop - np.min(crop))/(np.max(crop) - np.min(crop) + 0.00001)) - 1
     crop = torch.from_numpy(crop).float().permute(2, 0, 1)
 
-    if coord:
-        coordcrop = coordxy[:, hc-128:hc+128, wc-128:wc+128]
-        crop = torch.cat((crop, coordcrop), dim=0)
+    # if coord:
+    #     coordcrop = coordxy[:, hc-128:hc+128, wc-128:wc+128]
+    #     crop = torch.cat((crop, coordcrop), dim=0)
 
     return crop.unsqueeze(dim=0)
 
@@ -80,11 +80,8 @@ def imgman(datapath, coord=False):
     imgfolderpath = os.path.join(datapath, imgfolder[0])
     imglist = os.listdir(imgfolderpath)
     imgs = random.sample(imglist, 2)
-    img1u = cv2.imread(os.path.join(imgfolderpath, imgs[0]))
-    img2u = cv2.imread(os.path.join(imgfolderpath, imgs[1]))
-
-    img1 = (img1u - np.min(img1u))/(np.max(img1u) - np.min(img1u))
-    img2 = (img2u - np.min(img2u))/(np.max(img2u) - np.min(img2u))
+    img1 = cv2.imread(os.path.join(imgfolderpath, imgs[0]))
+    img2 = cv2.imread(os.path.join(imgfolderpath, imgs[1]))
     
     crop1 = cropimg(img1, coord=coord)
     crop2 = cropimg(img2, coord=coord)
